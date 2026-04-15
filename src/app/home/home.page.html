@@ -40,6 +40,7 @@
 
     </ion-card-content>
   </ion-card>
+<ion-card *ngIf="showCategories">
 
 <ion-item>
   <ion-label>Filtrar por categoría</ion-label>
@@ -53,6 +54,7 @@
     }
   </ion-select>
 </ion-item>
+</ion-card>
   <!-- 🔽 TU LISTA ORIGINAL -->
   <ion-list>
    @for (message of getFilteredMessages(); track message.id){
