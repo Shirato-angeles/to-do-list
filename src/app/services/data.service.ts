@@ -6,6 +6,8 @@ export interface Message {
   date: string;
   id: number;
   read: boolean;
+  categoryId?: string; 
+
 }
 
 @Injectable({
@@ -18,7 +20,8 @@ export class DataService {
       subject: 'New event: Trip to Vegas',
       date: '9:32 AM',
       id: 0,
-      read: false
+      read: false,
+      categoryId: 'UtDaHI69kfJZd7M2xXWS'
     },
     {
       fromName: 'Lauren Ruthford',

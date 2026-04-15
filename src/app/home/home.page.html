@@ -1,11 +1,3 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Inbox
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content [fullscreen]="true">
   <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
     <ion-refresher-content></ion-refresher-content>
@@ -19,9 +11,52 @@
     </ion-toolbar>
   </ion-header>
 
+  <!-- 🔥 CATEGORÍAS -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Categorías</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+
+      <!-- Input -->
+      <ion-item>
+        <ion-input [(ngModel)]="newCategory" placeholder="Nueva categoría"></ion-input>
+        <ion-button (click)="addCategory()">Agregar</ion-button>
+      </ion-item>
+
+      <!-- Lista -->
+      <ion-list>
+        @for (cat of categories; track cat.id) {
+        <ion-item>
+          {{ cat.name }}
+
+          <ion-button fill="clear" color="danger" slot="end" (click)="deleteCategory(cat.id)">
+            Eliminar
+          </ion-button>
+        </ion-item>
+        }
+      </ion-list>
+
+    </ion-card-content>
+  </ion-card>
+
+<ion-item>
+  <ion-label>Filtrar por categoría</ion-label>
+  <ion-select [(ngModel)]="filterCategoryId">
+    <ion-select-option value="">Todas</ion-select-option>
+
+    @for (cat of categories; track cat.id) {
+      <ion-select-option [value]="cat.id">
+        {{ cat.name }}
+      </ion-select-option>
+    }
+  </ion-select>
+</ion-item>
+  <!-- 🔽 TU LISTA ORIGINAL -->
   <ion-list>
-    @for (message of getMessages(); track message) {
-      <app-message [message]="message"></app-message>
+   @for (message of getFilteredMessages(); track message.id){
+    <app-message [message]="message"></app-message>
     }
   </ion-list>
 </ion-content>
