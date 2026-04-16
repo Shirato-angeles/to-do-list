@@ -19,21 +19,43 @@ export class HomePage implements OnInit {
 
   private remoteConfig = inject(RemoteConfig);
 
- selectedCategoryId = '';
+  selectedCategoryId = '';
   filterCategoryId = '';
   categories: any[] = [];
   newCategory = '';
   showCategories = true;
+  newTaskTitle = '';
+
+  toggleTask(task: Message) {
+  task.read = !task.read;
+}
 
   getFilteredMessages(): Message[] {
-  if (!this.filterCategoryId) {
-    return this.data.getMessages();
+    if (!this.filterCategoryId) {
+      return this.data.getMessages();
+    }
+
+    return this.data.getMessages().filter(
+      msg => msg.categoryId === this.filterCategoryId
+    );
   }
 
-  return this.data.getMessages().filter(
-    msg => msg.categoryId === this.filterCategoryId
-  );
-}
+  addTask() {
+    if (!this.newTaskTitle.trim()) return;
+
+    const newTask: Message = {
+      id: Date.now(),
+      fromName: 'Usuario',
+      subject: this.newTaskTitle,
+      date: new Date().toLocaleTimeString(),
+      read: false,
+      categoryId: this.selectedCategoryId || undefined
+    };
+
+    this.data.messages.unshift(newTask);
+
+    this.newTaskTitle = '';
+  }
 
   async ngOnInit() {
     await this.loadCategories();
@@ -41,18 +63,35 @@ export class HomePage implements OnInit {
 
   }
 
+  deleteTask(task: Message) {
+  this.data.messages = this.data.messages.filter(m => m.id !== task.id);
+}
+
   async loadCategories() {
     this.categories = await this.categoryService.getCategories();
   }
 
-  async loadFeatureFlags() {
-  await fetchAndActivate(this.remoteConfig);
+async loadFeatureFlags() {
+  try {
+    // 🔥 fuerza fetch sin cache
+    this.remoteConfig.settings = {
+      minimumFetchIntervalMillis: 0,
+      fetchTimeoutMillis: 10000
+    };
 
-  const value = getValue(this.remoteConfig, 'enable_categories').asString();
+    await fetchAndActivate(this.remoteConfig);
 
-  this.showCategories = value === 'true';
+    const value = getValue(this.remoteConfig, 'enable_categories').asString();
 
-  console.log('FEATURE FLAG:', this.showCategories);
+    console.log('VALOR CRUDO:', value);
+
+    this.showCategories = value === 'true';
+
+    console.log('FEATURE FLAG FINAL:', this.showCategories);
+
+  } catch (error) {
+    console.error('ERROR REMOTE CONFIG:', error);
+  }
 }
 
   async addCategory() {
@@ -76,5 +115,15 @@ export class HomePage implements OnInit {
 
   getMessages(): Message[] {
     return this.data.getMessages();
+  }
+
+  getPendingCount(): number {
+    return this.data.getMessages().filter(msg => !msg.read).length;
+  }
+
+  getCategoryName(categoryId: string | undefined): string {
+    if (!categoryId) return '';
+    const category = this.categories.find(cat => cat.id === categoryId);
+    return category ? category.name : '';
   }
 }

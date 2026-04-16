@@ -1,0 +1,426 @@
+// ─── Variables ───────────────────────────────────────────
+:root {
+  --violet-glow: rgba(124, 58, 237, 0.18);
+  --violet-mid: rgba(124, 58, 237, 0.25);
+  --violet-accent: #7c3aed;
+  --violet-light: #a78bfa;
+  --violet-pale: #c4b5fd;
+  --glass-bg: rgba(255, 255, 255, 0.04);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-hover-border: rgba(167, 139, 250, 0.25);
+  --text-primary: #e8e8f0;
+  --text-muted: rgba(232, 232, 240, 0.45);
+  --text-faint: rgba(232, 232, 240, 0.25);
+  --radius-card: 20px;
+  --radius-input: 12px;
+}
+
+// ─── Fondo ───────────────────────────────────────────────
+.home-content {
+  --background: #0d0d14;
+  --padding-start: 20px;
+  --padding-end: 20px;
+  --padding-top: 16px;
+  --padding-bottom: 40px;
+  overflow: hidden;
+}
+
+.app-bg-blob {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  
+  &.top {
+    top: -30%;
+    left: -20%;
+    width: 70vw;
+    height: 70vw;
+    background: radial-gradient(circle, var(--violet-glow) 0%, transparent 70%);
+  }
+  &.bottom {
+    bottom: -20%;
+    right: -10%;
+    width: 55vw;
+    height: 55vw;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 70%);
+  }
+}
+
+// Contenido sobre los blobs
+ion-card, .glass-card, .task-item, .app-header,
+.tasks-header, .empty-state { position: relative; z-index: 1; }
+
+// ─── Header ──────────────────────────────────────────────
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 4px 24px;
+  animation: fadeDown 0.5s ease both;
+}
+
+.app-title {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #e0d7ff 0%, #a78bfa 60%, #7c3aed 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+}
+
+.pending-badge {
+  background: var(--violet-mid);
+  border: 1px solid rgba(167, 139, 250, 0.3);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 12px;
+  color: var(--violet-pale);
+  font-weight: 500;
+}
+
+// ─── Glass Card ──────────────────────────────────────────
+.glass-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-card);
+  padding: 18px;
+  margin-bottom: 16px;
+  transition: border-color 0.3s ease;
+  animation: fadeUp 0.5s ease both;
+
+  &:hover { border-color: var(--glass-hover-border); }
+  &.create-card { animation-delay: 0.1s; }
+}
+
+// ─── Label de sección ────────────────────────────────────
+.card-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(167, 139, 250, 0.7);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  &::before {
+    content: '';
+    width: 3px;
+    height: 12px;
+    background: linear-gradient(180deg, var(--violet-light), var(--violet-accent));
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+}
+
+// ─── Inputs ──────────────────────────────────────────────
+.task-input {
+  --background: rgba(255, 255, 255, 0.05);
+  --border-radius: #{var(--radius-input)};
+  --color: var(--text-primary);
+  --placeholder-color: var(--text-faint);
+  --padding-start: 16px;
+  --padding-end: 16px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-input);
+  margin-bottom: 10px;
+  transition: all 0.25s ease;
+  min-height: 48px;
+
+  &.has-focus {
+    border-color: rgba(167, 139, 250, 0.5);
+    --background: rgba(167, 139, 250, 0.07);
+    box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.1);
+  }
+}
+
+.task-select {
+  --background: rgba(255, 255, 255, 0.05);
+  --color: var(--text-primary);
+  --placeholder-color: var(--text-faint);
+  --padding-start: 16px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-input);
+  margin-bottom: 10px;
+  min-height: 48px;
+}
+
+// ─── Botón primario ──────────────────────────────────────
+.btn-primary {
+  --background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+  --background-activated: #6d28d9;
+  --border-radius: #{var(--radius-input)};
+  --color: #fff;
+  --box-shadow: 0 4px 20px rgba(124, 58, 237, 0.35);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin-top: 4px;
+  height: 48px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    --box-shadow: 0 8px 28px rgba(124, 58, 237, 0.5);
+    transform: translateY(-1px);
+  }
+  &:active { transform: scale(0.98); }
+}
+
+// ─── Categorías row ──────────────────────────────────────
+.cat-add-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+
+  .task-input.inline { margin-bottom: 0; flex: 1; }
+}
+
+.btn-add-cat {
+  --background: rgba(124, 58, 237, 0.3);
+  --border-radius: 10px;
+  --color: var(--violet-pale);
+  height: 48px;
+  width: 48px;
+}
+
+// ─── Chips ───────────────────────────────────────────────
+.chip-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.chip {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  user-select: none;
+
+  &:hover { border-color: rgba(167, 139, 250, 0.4); color: var(--violet-pale); }
+  &.active {
+    background: var(--violet-mid);
+    border-color: rgba(167, 139, 250, 0.5);
+    color: var(--violet-pale);
+  }
+}
+
+.chip-del {
+  width: 14px; height: 14px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  transition: background 0.2s;
+
+  &:hover { background: rgba(239, 68, 68, 0.35); color: #fca5a5; }
+}
+
+// ─── Divisor y header tareas ─────────────────────────────
+.section-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.05);
+  margin: 4px 0 14px;
+}
+
+.tasks-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding: 0 4px;
+  animation: fadeUp 0.5s 0.3s ease both;
+  opacity: 0;
+  animation-fill-mode: both;
+}
+
+.tasks-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.tasks-count {
+  background: var(--violet-mid);
+  border: 1px solid rgba(167, 139, 250, 0.2);
+  border-radius: 20px;
+  padding: 2px 10px;
+  font-size: 11px;
+  color: var(--violet-light);
+  font-weight: 600;
+}
+
+// ─── Task Item ───────────────────────────────────────────
+.task-item {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  animation: slideIn 0.35s ease both;
+  transition: all 0.25s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.065);
+    border-color: rgba(167, 139, 250, 0.2);
+    transform: translateX(3px);
+  }
+
+  &.done {
+    opacity: 0.5;
+    .task-name { text-decoration: line-through; color: var(--text-faint); }
+  }
+}
+
+// stagger delay para primeras tareas
+@for $i from 1 through 10 {
+  .task-item:nth-child(#{$i}) { animation-delay: #{0.3 + $i * 0.07}s; }
+}
+
+// ─── Checkbox ────────────────────────────────────────────
+.custom-checkbox {
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  border-radius: 7px;
+  border: 1.5px solid rgba(167, 139, 250, 0.4);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  color: #fff;
+
+  &.checked {
+    background: linear-gradient(135deg, var(--violet-accent), #6d28d9);
+    border-color: transparent;
+    box-shadow: 0 2px 12px rgba(124, 58, 237, 0.4);
+    animation: checkPop 0.25s ease;
+  }
+}
+
+// ─── Task body ───────────────────────────────────────────
+.task-body { flex: 1; min-width: 0; }
+
+.task-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  transition: all 0.25s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.task-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.task-date {
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
+.task-cat {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: rgba(124, 58, 237, 0.15);
+  border: 1px solid rgba(167, 139, 250, 0.2);
+  color: var(--violet-light);
+  letter-spacing: 0.04em;
+}
+
+// ─── Botón borrar ────────────────────────────────────────
+.btn-delete {
+  background: transparent;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-faint);
+  transition: all 0.2s ease;
+  font-size: 16px;
+  flex-shrink: 0;
+
+  &:hover {
+    background: rgba(239, 68, 68, 0.12);
+    color: #f87171;
+    transform: scale(1.1);
+  }
+}
+
+// ─── Empty State ─────────────────────────────────────────
+.empty-state {
+  text-align: center;
+  padding: 48px 20px;
+  animation: fadeUp 0.5s 0.35s ease both;
+  opacity: 0;
+  animation-fill-mode: both;
+}
+
+.empty-icon {
+  width: 64px;
+  height: 64px;
+  background: rgba(124, 58, 237, 0.1);
+  border: 1px solid rgba(167, 139, 250, 0.2);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  font-size: 28px;
+  color: var(--violet-light);
+}
+
+.empty-title { font-size: 15px; font-weight: 600; color: var(--text-muted); margin: 0; }
+.empty-sub { font-size: 13px; color: var(--text-faint); margin-top: 6px; }
+
+// ─── Animaciones ────────────────────────────────────────
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes checkPop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}

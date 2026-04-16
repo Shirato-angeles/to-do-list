@@ -1,64 +1,87 @@
-<ion-content [fullscreen]="true">
-  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
+<ion-content [fullscreen]="true" class="home-content">
+  <div class="app-bg-blob top"></div>
+  <div class="app-bg-blob bottom"></div>
 
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">
-        Inbox
-      </ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <!-- HEADER -->
+  <div class="app-header">
+    <h1 class="app-title">Task Manager</h1>
+    <div class="pending-badge" *ngIf="getPendingCount() > 0">
+      {{ getPendingCount() }} pendiente{{ getPendingCount() !== 1 ? 's' : '' }}
+    </div>
+  </div>
 
-  <!-- 🔥 CATEGORÍAS -->
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Categorías</ion-card-title>
-    </ion-card-header>
+  <!-- CREAR TAREA -->
+  <div class="glass-card create-card">
+    <div class="card-label">Nueva tarea</div>
+    <ion-input [(ngModel)]="newTaskTitle" placeholder="¿Qué necesitas hacer?" class="task-input" />
+    <ion-select [(ngModel)]="selectedCategoryId" placeholder="Sin categoría" class="task-select">
+      <ion-select-option value="">Sin categoría</ion-select-option>
+      @for (cat of categories; track cat.id) {
+        <ion-select-option [value]="cat.id">{{ cat.name }}</ion-select-option>
+      }
+    </ion-select>
+    <ion-button expand="block" class="btn-primary" (click)="addTask()">
+      <ion-icon name="add" slot="start"></ion-icon>
+      Crear Tarea
+    </ion-button>
+  </div>
 
-    <ion-card-content>
-
-      <!-- Input -->
-      <ion-item>
-        <ion-input [(ngModel)]="newCategory" placeholder="Nueva categoría"></ion-input>
-        <ion-button (click)="addCategory()">Agregar</ion-button>
-      </ion-item>
-
-      <!-- Lista -->
-      <ion-list>
-        @for (cat of categories; track cat.id) {
-        <ion-item>
+  <!-- CATEGORÍAS -->
+  <div class="glass-card" *ngIf="showCategories">
+    <div class="card-label">Categorías</div>
+    <div class="cat-add-row">
+      <ion-input [(ngModel)]="newCategory" placeholder="Nueva categoría" class="task-input inline" />
+      <ion-button fill="solid" class="btn-add-cat" (click)="addCategory()">
+        <ion-icon name="add"></ion-icon>
+      </ion-button>
+    </div>
+    <div class="chip-container">
+      <div class="chip" [class.active]="filterCategoryId === ''" (click)="filterCategoryId = ''">Todas</div>
+      @for (cat of categories; track cat.id) {
+        <div class="chip" [class.active]="filterCategoryId === cat.id" (click)="filterCategoryId = cat.id">
           {{ cat.name }}
+          <span class="chip-del" (click)="deleteCategory(cat.id); $event.stopPropagation()">×</span>
+        </div>
+      }
+    </div>
+  </div>
 
-          <ion-button fill="clear" color="danger" slot="end" (click)="deleteCategory(cat.id)">
-            Eliminar
-          </ion-button>
-        </ion-item>
-        }
-      </ion-list>
+  <!-- LISTA -->
+  <div class="section-divider"></div>
+  <div class="tasks-header" *ngIf="getFilteredMessages().length > 0">
+    <span class="tasks-title">Tareas</span>
+    <span class="tasks-count">{{ getFilteredMessages().length }}</span>
+  </div>
 
-    </ion-card-content>
-  </ion-card>
-<ion-card *ngIf="showCategories">
-
-<ion-item>
-  <ion-label>Filtrar por categoría</ion-label>
-  <ion-select [(ngModel)]="filterCategoryId">
-    <ion-select-option value="">Todas</ion-select-option>
-
-    @for (cat of categories; track cat.id) {
-      <ion-select-option [value]="cat.id">
-        {{ cat.name }}
-      </ion-select-option>
+  <div *ngIf="getFilteredMessages().length > 0; else emptyState">
+    @for (msg of getFilteredMessages(); track msg.id) {
+      <div class="task-item" [class.done]="msg.read">
+        <div class="custom-checkbox" [class.checked]="msg.read" (click)="toggleTask(msg)">
+          <ion-icon *ngIf="msg.read" name="checkmark"></ion-icon>
+        </div>
+        <div class="task-body">
+          <div class="task-name">{{ msg.subject }}</div>
+          <div class="task-meta">
+            <span class="task-date">{{ msg.date }}</span>
+            <span class="task-cat" *ngIf="getCategoryName(msg.categoryId)">
+              {{ getCategoryName(msg.categoryId) }}
+            </span>
+          </div>
+        </div>
+        <button class="btn-delete" (click)="deleteTask(msg)">
+          <ion-icon name="trash-outline"></ion-icon>
+        </button>
+      </div>
     }
-  </ion-select>
-</ion-item>
-</ion-card>
-  <!-- 🔽 TU LISTA ORIGINAL -->
-  <ion-list>
-   @for (message of getFilteredMessages(); track message.id){
-    <app-message [message]="message"></app-message>
-    }
-  </ion-list>
+  </div>
+
+  <ng-template #emptyState>
+    <div class="empty-state">
+      <div class="empty-icon">
+        <ion-icon name="checkmark-done-outline"></ion-icon>
+      </div>
+      <p class="empty-title">Sin tareas pendientes</p>
+      <p class="empty-sub">¡Crea tu primera tarea para comenzar!</p>
+    </div>
+  </ng-template>
 </ion-content>
