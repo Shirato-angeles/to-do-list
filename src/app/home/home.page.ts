@@ -1,10 +1,12 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { RefresherCustomEvent } from '@ionic/angular';
 
 import { DataService, Message } from '../services/data.service';
 import { CategoryService } from '../services/category.service';
 
 import { RemoteConfig, getValue, fetchAndActivate } from '@angular/fire/remote-config';
+import { interval, Subscription } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
@@ -12,12 +14,13 @@ import { RemoteConfig, getValue, fetchAndActivate } from '@angular/fire/remote-c
   styleUrls: ['home.page.scss'],
   standalone: false,
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnInit, OnDestroy {
 
   private data = inject(DataService);
   private categoryService = inject(CategoryService);
-
   private remoteConfig = inject(RemoteConfig);
+
+  private configPolling$?: Subscription;
 
   selectedCategoryId = '';
   filterCategoryId = '';
@@ -27,8 +30,8 @@ export class HomePage implements OnInit {
   newTaskTitle = '';
 
   toggleTask(task: Message) {
-  task.read = !task.read;
-}
+    task.read = !task.read;
+  }
 
   getFilteredMessages(): Message[] {
     if (!this.filterCategoryId) {
@@ -53,46 +56,56 @@ export class HomePage implements OnInit {
     };
 
     this.data.messages.unshift(newTask);
-
     this.newTaskTitle = '';
   }
 
   async ngOnInit() {
     await this.loadCategories();
     await this.loadFeatureFlags();
+    this.startConfigPolling();
+  }
 
+  ngOnDestroy() {
+    this.configPolling$?.unsubscribe();
+  }
+
+  private startConfigPolling() {
+    this.configPolling$ = interval(30_000)
+      .pipe(
+        switchMap(() => this.loadFeatureFlags())
+      )
+      .subscribe();
   }
 
   deleteTask(task: Message) {
-  this.data.messages = this.data.messages.filter(m => m.id !== task.id);
-}
+    this.data.messages = this.data.messages.filter(m => m.id !== task.id);
+  }
 
   async loadCategories() {
     this.categories = await this.categoryService.getCategories();
   }
 
-async loadFeatureFlags() {
-  try {
-    // 🔥 fuerza fetch sin cache
-    this.remoteConfig.settings = {
-      minimumFetchIntervalMillis: 0,
-      fetchTimeoutMillis: 10000
-    };
+  async loadFeatureFlags(): Promise<void> {
+    try {
+      this.remoteConfig.settings = {
+        minimumFetchIntervalMillis: 0,
+        fetchTimeoutMillis: 10000
+      };
 
-    await fetchAndActivate(this.remoteConfig);
+      await fetchAndActivate(this.remoteConfig);
 
-    const value = getValue(this.remoteConfig, 'enable_categories').asString();
+      const value = getValue(this.remoteConfig, 'enable_categories').asString();
+      const newValue = value === 'true';
 
-    console.log('VALOR CRUDO:', value);
+      if (this.showCategories !== newValue) {
+        console.log(`Feature flag cambió: ${this.showCategories} → ${newValue}`);
+        this.showCategories = newValue;
+      }
 
-    this.showCategories = value === 'true';
-
-    console.log('FEATURE FLAG FINAL:', this.showCategories);
-
-  } catch (error) {
-    console.error('ERROR REMOTE CONFIG:', error);
+    } catch (error) {
+      console.error('ERROR REMOTE CONFIG:', error);
+    }
   }
-}
 
   async addCategory() {
     if (!this.newCategory.trim()) return;
