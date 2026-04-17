@@ -1,0 +1,39 @@
+❓ Desafíos:
+
+Uno de los principales desafíos fue la integración de Firebase Remote Config para el control dinámico de funcionalidades, ya que requiere manejar correctamente el caching y la sincronización de valores en tiempo de ejecución.
+
+Adicionalmente, la gestión de relaciones entre tareas y categorías en un entorno NoSQL implicó diseñar una estructura flexible basada en identificadores, evitando acoplamientos innecesarios.
+
+Otro reto fue la adaptación de la interfaz de usuario para ofrecer una experiencia más intuitiva, pasando de un diseño básico a uno más estructurado y visualmente claro.
+
+El archivo APK fue generado correctamente y probado en dispositivo físico.
+
+El build de iOS no se generó debido a limitaciones de versión de Xcode en el entorno local, sin embargo el proyecto es completamente compatible y puede compilarse en un entorno actualizado sin cambios adicionales.
+
+
+
+❓ Optimización de rendimiento:
+
+Se aplicaron varias técnicas para optimizar el rendimiento de la aplicación:
+
+- Uso de rendering eficiente mediante estructuras iterativas optimizadas (trackBy en listas) para evitar renders innecesarios.
+- Separación de lógica en servicios, reduciendo carga en componentes.
+- Uso de Firebase como backend serverless para minimizar latencia en operaciones básicas.
+- Control del caching en Remote Config para evitar múltiples llamadas innecesarias.
+
+Estas decisiones permiten mantener una aplicación ligera y escalable.
+
+
+❓ Calidad y mantenibilidad:
+
+Para asegurar la calidad y mantenibilidad del código se implementaron las siguientes prácticas:
+
+- Separación de responsabilidades utilizando servicios para la lógica de negocio.
+- Uso de modelos tipados para garantizar consistencia en los datos.
+- Organización modular del proyecto, facilitando escalabilidad.
+- Implementación de feature flags con Remote Config para evitar cambios directos en código al habilitar funcionalidades.
+- Código limpio y estructurado siguiendo buenas prácticas de Angular.
+
+Esto permite que el proyecto sea fácilmente extensible y mantenible en el tiempo.
+
+

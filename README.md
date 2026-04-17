@@ -49,13 +49,6 @@ Aplicación desarrollada con Ionic + Angular + Firebase que permite gestionar ta
 
 ## ⚙️ Configuración del proyecto
 
-### 1. Clonar repositorio
-
-```bash
-git clone <URL_DEL_REPO>
-cd to-do-list
-```
-
 ---
 
 ### 2. Instalar dependencias
